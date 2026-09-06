@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated user root document",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Authenticated Firebase User UID" },
+        "email": { "type": "string", "format": "email", "description": "User email" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "createdAt": { "type": "number", "description": "Creation timestamp in milliseconds" }
+      },
+      "required": ["uid"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Journal conversation session belonging to an authenticated user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique conversation identifier" },
+        "title": { "type": "string", "maxLength": 200, "description": "Conversation topic title" },
+        "createdAt": { "type": "number", "description": "Created timestamp" },
+        "updatedAt": { "type": "number", "description": "Last updated timestamp" },
+        "preview": { "type": "string", "maxLength": 500, "description": "Snippet preview of recent message" },
+        "messageCount": { "type": "number", "description": "Number of messages in the conversation" }
+      },
+      "required": ["title", "createdAt", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual message in a journal conversation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Message document identifier" },
+        "sender": { "type": "string", "enum": ["user", "gemini"], "description": "Message author" },
+        "content": { "type": "string", "maxLength": 8000, "description": "Text content of message" },
+        "timestamp": { "type": "number", "description": "Epoch timestamp in milliseconds" },
+        "actionItems": {
+          "type": "array",
+          "description": "Extracted tangible next steps"
+        }
+      },
+      "required": ["sender", "content", "timestamp"]
+    },
+    "Summary": {
+      "title": "Summary",
+      "description": "Summarized synthesis of journal conversations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Summary identifier" },
+        "content": { "type": "string", "description": "Summary narrative" },
+        "createdAt": { "type": "number", "description": "Timestamp created" }
+      },
+      "required": ["content", "createdAt"]
+    },
+    "Insight": {
+      "title": "Insight",
+      "description": "Life insights, goals, recurring patterns, and action items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Insight document identifier" },
+        "type": {
+          "type": "string",
+          "enum": ["recurring_topic", "goal", "action_item", "idea", "weekly_reflection"],
+          "description": "Category of life insight"
+        },
+        "title": { "type": "string", "description": "Title or headline" },
+        "description": { "type": "string", "description": "Details or actionable context" },
+        "status": {
+          "type": "string",
+          "enum": ["active", "in_progress", "completed", "revisit"],
+          "description": "Progress state"
+        },
+        "createdAt": { "type": "number", "description": "Timestamp created" }
+      },
+      "required": ["type", "title", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Root user profile scoped strictly to request.auth.uid"
+    },
+    "/users/{userId}/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "User's private conversations subcollection"
+    },
+    "/users/{userId}/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages inside a user's conversation"
+    },
+    "/users/{userId}/summaries/{summaryId}": {
+      "schema": "Summary",
+      "description": "User's private synthesized summaries"
+    },
+    "/users/{userId}/insights/{insightId}": {
+      "schema": "Insight",
+      "description": "User's private synthesized life insights"
+    }
+  }
+}

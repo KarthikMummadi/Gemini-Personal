@@ -1,0 +1,6 @@
+{
+  "name": "Gemini Journal — Turn Thoughts Into Action",
+  "description": "A private AI journaling and brainstorming application for students and developers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
